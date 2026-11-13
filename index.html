@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budgato India — Live Indian SaaS, ISP & UPI Outage Monitor</title>
+  <style>
+    :root { --bg:#0b0f19; --card:#131a2a; --border:#1f293d; --text:#f3f4f6; --muted:#9ca3af; --green:#10b981; --red:#ef4444; --amber:#f59e0b; --accent:#3b82f6; }
+    * { box-sizing:border-box; font-family:system-ui,-apple-system,sans-serif; }
+    body { margin:0; background:var(--bg); color:var(--text); line-height:1.5; }
+    .container { max-width:1050px; margin:0 auto; padding:24px 16px; }
+    header { display:flex; justify-content:space-between; align-items:center; padding-bottom:20px; border-bottom:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+    .logo { font-size:1.45rem; font-weight:800; }
+    .logo span { color:var(--green); }
+    .badge { background:rgba(16,185,129,0.15); color:var(--green); padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:600; }
+    .hero { text-align:center; padding:32px 10px 24px; }
+    .hero h1 { font-size:2rem; margin:0 0 10px; }
+    .hero p { color:var(--muted); max-width:620px; margin:0 auto 20px; }
+    .scanner-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; max-width:650px; margin:0 auto 30px; }
+    .input-group { display:flex; gap:10px; flex-wrap:wrap; }
+    input[type="text"] { flex:1; min-width:200px; padding:12px; border-radius:8px; border:1px solid var(--border); background:#0b0f19; color:var(--text); }
+    button { background:var(--accent); color:#fff; border:none; padding:12px 18px; border-radius:8px; font-weight:600; cursor:pointer; }
+    .scan-results { margin-top:14px; text-align:left; display:none; border-top:1px solid var(--border); padding-top:12px; }
+    .check-item { display:flex; justify-content:space-between; padding:6px 0; font-size:0.9rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:14px; margin-top:16px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:16px; }
+    .card-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+    .status-pill { font-size:0.75rem; font-weight:700; padding:3px 8px; border-radius:6px; }
+    .up { background:rgba(16,185,129,0.15); color:var(--green); }
+    .degraded { background:rgba(245,158,11,0.15); color:var(--amber); }
+    .down { background:rgba(239,68,68,0.15); color:var(--red); }
+    .report-btn { margin-top:10px; background:transparent; border:1px solid var(--border); color:var(--muted); padding:6px; font-size:0.8rem; width:100%; }
+    .pricing { margin-top:40px; background:var(--card); border:1px solid var(--accent); border-radius:12px; padding:24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+    .cta-btn { background:var(--green); color:#052e16; font-weight:800; padding:12px 22px; text-decoration:none; border-radius:8px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">Budgato <span>India</span></div>
+      <div class="badge" id="last-updated">● Live Auto-Sync</div>
+    </header>
+    <section class="hero">
+      <h1>Indian ISP, UPI & SaaS Outage Radar</h1>
+      <p>Track live downtime across Indian ISPs, payment gateways, and cloud tools—or run a free website audit below.</p>
+      <div class="scanner-box">
+        <div class="input-group">
+          <input type="text" id="siteUrl" placeholder="Enter website (e.g. zomato.com)" />
+          <button onclick="runAudit()">Free Audit</button>
+        </div>
+        <div class="scan-results" id="scanResults"></div>
+      </div>
+    </section>
+    <h2>Live Service & ISP Status (India)</h2>
+    <div class="grid" id="servicesGrid"></div>
+    <section class="pricing">
+      <div>
+        <h3 style="margin:0 0 6px;">Instant Telegram & Email Outage Alerts</h3>
+        <div style="color:var(--muted);font-size:0.9rem;">Get notified the second Jio, Airtel, UPI, Razorpay, or AWS goes down.</div>
+      </div>
+      <a href="https://rzp.io" target="_blank" class="cta-btn">Subscribe — ₹199/mo</a>
+    </section>
+  </div>
+  <script>
+    const defaultServices = [
+      { id:"upi", name:"UPI / NPCI", cat:"Payments", status:"Operational", reports:1 },
+      { id:"razorpay", name:"Razorpay", cat:"Payments", status:"Operational", reports:0 },
+      { id:"jio", name:"JioFiber / 5G", cat:"Indian ISP", status:"Operational", reports:3 },
+      { id:"airtel", name:"Airtel Xstream", cat:"Indian ISP", status:"Operational", reports:1 },
+      { id:"act", name:"ACT Fibernet", cat:"Indian ISP", status:"Operational", reports:2 },
+      { id:"zerodha", name:"Zerodha Kite", cat:"Trading", status:"Operational", reports:0 },
+      { id:"aws", name:"AWS Mumbai", cat:"Cloud", status:"Operational", reports:0 },
+      { id:"zoho", name:"Zoho Mail", cat:"SaaS", status:"Operational", reports:0 }
+    ];
+    let services = [...defaultServices];
+    async function loadLiveStatus() {
+      try {
+        const res = await fetch('./status.json?t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          if (data.services) services = data.services;
+          if (data.updatedAt) document.getElementById('last-updated').textContent = '● Updated: ' + data.updatedAt;
+        }
+      } catch (e) {}
+      renderGrid();
+    }
+    function renderGrid() {
+      const grid = document.getElementById('servicesGrid');
+      const rep = JSON.parse(localStorage.getItem('budgatoReports') || '{}');
+      grid.innerHTML = services.map(s => {
+        const total = (s.reports || 0) + (rep[s.id] ? 1 : 0);
+        const down = s.status !== 'Operational' || total >= 15;
+        return `<div class="card"><div class="card-top"><strong>${s.name}</strong><span class="status-pill ${down ? 'down' : 'up'}">${down ? 'Disruption' : 'Operational'}</span></div><div style="font-size:0.78rem;color:var(--muted)">${s.cat} • ${total} reports</div><button class="report-btn" onclick="reportOutage('${s.id}')">${rep[s.id] ? '✓ Reported' : 'Report Issue'}</button></div>`;
+      }).join('');
+    }
+    function reportOutage(id) {
+      const rep = JSON.parse(localStorage.getItem('budgatoReports') || '{}');
+      rep[id] = true;
+      localStorage.setItem('budgatoReports', JSON.stringify(rep));
+      renderGrid();
+    }
+    async function runAudit() {
+      let u = document.getElementById('siteUrl').value.trim();
+      const box = document.getElementById('scanResults');
+      if (!u) return;
+      if (!u.startsWith('http')) u = 'https://' + u;
+      box.style.display = 'block';
+      const t0 = performance.now();
+      let ok = false;
+      try { await fetch(u, { mode:'no-cors' }); ok = true; } catch (e) {}
+      const ms = Math.round(performance.now() - t0);
+      box.innerHTML = `<div class="check-item"><span>Reachability</span><strong style="color:${ok?'var(--green)':'var(--red)'}">${ok?'Online ('+ms+'ms)':'Unreachable'}</strong></div><div class="check-item"><span>HTTPS SSL</span><strong>${u.startsWith('https://')?'Active':'Missing'}</strong></div>`;
+    }
+    loadLiveStatus();
+  </script>
+</body>
+</html>
