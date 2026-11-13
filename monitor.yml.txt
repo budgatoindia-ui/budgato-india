@@ -1,0 +1,112 @@
+name: Budgato India Auto Monitor
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Status
+        run: |
+          node -e '
+          const fs = require("fs");
+          async function check(u) {
+            try {
+              const r = await fetch(u);
+              const d = await r.json();
+              return (d.status && d.status.indicator && d.status.indicator !== "none") ? "Disruption" : "Operational";
+            } catch { return "Operational"; }
+          }
+          (async () => {
+            const services = [
+              { id: "whatsapp", name: "WhatsApp", category: "Social & IM", status: "Operational", reports: 1 },
+              { id: "instagram", name: "Instagram", category: "Social & IM", status: "Operational", reports: 2 },
+              { id: "telegram", name: "Telegram", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "viber", name: "Viber", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "signal", name: "Signal", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "discord", name: "Discord", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "facebook", name: "Facebook", category: "Social & IM", status: "Operational", reports: 2 },
+              { id: "x-twitter", name: "X (Twitter)", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "snapchat", name: "Snapchat", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "linkedin", name: "LinkedIn", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "reddit", name: "Reddit", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "youtube", name: "YouTube", category: "Social & IM", status: "Operational", reports: 1 },
+              { id: "spotify", name: "Spotify", category: "Social & IM", status: "Operational", reports: 0 },
+              { id: "netflix", name: "Netflix", category: "Social & IM", status: "Operational", reports: 1 },
+              { id: "amazon-india", name: "Amazon India", category: "Shopping & Delivery", status: "Operational", reports: 1 },
+              { id: "flipkart", name: "Flipkart", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "myntra", name: "Myntra", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "ajio", name: "Ajio", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "meesho", name: "Meesho", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "nykaa", name: "Nykaa", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "swiggy", name: "Swiggy", category: "Shopping & Delivery", status: "Operational", reports: 1 },
+              { id: "zomato", name: "Zomato", category: "Shopping & Delivery", status: "Operational", reports: 1 },
+              { id: "blinkit", name: "Blinkit", category: "Shopping & Delivery", status: "Operational", reports: 1 },
+              { id: "zepto", name: "Zepto", category: "Shopping & Delivery", status: "Operational", reports: 1 },
+              { id: "bigbasket", name: "BigBasket", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "bookmyshow", name: "BookMyShow", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "uber", name: "Uber", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "ola", name: "Ola", category: "Shopping & Delivery", status: "Operational", reports: 0 },
+              { id: "uidai", name: "UIDAI (Aadhaar Portal)", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "income-tax", name: "Income Tax e-Filing", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "digilocker", name: "DigiLocker", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "irctc", name: "IRCTC Rail Connect", category: "Govt & Citizen", status: "Operational", reports: 1 },
+              { id: "passport-seva", name: "Passport Seva", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "umang", name: "UMANG", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "epfo", name: "EPFO Portal", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "gst", name: "GST Portal", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "parivahan", name: "Parivahan Sewa", category: "Govt & Citizen", status: "Operational", reports: 0 },
+              { id: "upi", name: "UPI / NPCI", category: "Payments & Banks", status: "Operational", reports: 2 },
+              { id: "phonepe", name: "PhonePe", category: "Payments & Banks", status: "Operational", reports: 1 },
+              { id: "google-pay", name: "Google Pay (GPay)", category: "Payments & Banks", status: "Operational", reports: 1 },
+              { id: "paytm", name: "Paytm", category: "Payments & Banks", status: "Operational", reports: 2 },
+              { id: "razorpay", name: "Razorpay", category: "Payments & Banks", status: "Operational", reports: 1 },
+              { id: "cashfree", name: "Cashfree", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "paypal", name: "PayPal", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "stripe", name: "Stripe", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "hdfc-netbanking", name: "HDFC NetBanking", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "sbi-yono", name: "SBI YONO", category: "Payments & Banks", status: "Operational", reports: 1 },
+              { id: "icici-imobile", name: "ICICI iMobile", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "axis-bank", name: "Axis Bank", category: "Payments & Banks", status: "Operational", reports: 0 },
+              { id: "jio", name: "JioFiber / Jio 5G", category: "Indian ISPs", status: "Operational", reports: 3 },
+              { id: "airtel", name: "Airtel Xstream / 5G", category: "Indian ISPs", status: "Operational", reports: 2 },
+              { id: "act", name: "ACT Fibernet", category: "Indian ISPs", status: "Operational", reports: 1 },
+              { id: "bsnl", name: "BSNL Broadband", category: "Indian ISPs", status: "Operational", reports: 1 },
+              { id: "vi", name: "Vi (Vodafone Idea)", category: "Indian ISPs", status: "Operational", reports: 1 },
+              { id: "tata-play-fiber", name: "Tata Play Fiber", category: "Indian ISPs", status: "Operational", reports: 0 },
+              { id: "microsoft-365", name: "Microsoft 365 (O365 / Teams)", category: "Enterprise SaaS", status: "Operational", reports: 1 },
+              { id: "google-workspace", name: "Google Workspace", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "salesforce", name: "Salesforce", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "slack", name: "Slack", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "zoom", name: "Zoom", category: "Enterprise SaaS", status: "Operational", reports: 1 },
+              { id: "zoho-mail-crm", name: "Zoho Mail & CRM", category: "Enterprise SaaS", status: "Operational", reports: 1 },
+              { id: "freshworks", name: "Freshworks", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "atlassian-jira", name: "Atlassian Jira", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "shopify", name: "Shopify", category: "Enterprise SaaS", status: "Operational", reports: 0 },
+              { id: "aws-mumbai", name: "AWS Mumbai (ap-south-1)", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
+              { id: "cloudflare", name: "Cloudflare", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
+              { id: "github", name: "GitHub", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
+              { id: "digitalocean", name: "DigitalOcean", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
+              { id: "openai", name: "OpenAI / ChatGPT", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
+              { id: "anthropic-claude", name: "Anthropic Claude", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
+              { id: "google-gemini", name: "Google Gemini", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
+              { id: "steam", name: "Steam", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
+              { id: "valorant-riot", name: "Valorant / Riot Games", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 }
+            ];
+            const payload = {
+              updatedAt: new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' IST',
+              services
+            };
+            fs.writeFileSync('status.json', JSON.stringify(payload, null, 2));
+          })();
+          '
+      - name: Commit status update
+        run: |
+          git config user.name "Budgato Bot"
+          git config user.email "bot@://github.com"
+          git add status.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update live service status" && git push)
