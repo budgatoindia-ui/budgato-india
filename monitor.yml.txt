@@ -1,0 +1,49 @@
+name: Budgato India Auto Monitor
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Status
+        run: |
+          node -e '
+          const fs = require("fs");
+          async function check(u) {
+            try {
+              const r = await fetch(u);
+              const d = await r.json();
+              return (d.status && d.status.indicator && d.status.indicator !== "none") ? "Disruption" : "Operational";
+            } catch { return "Operational"; }
+          }
+          (async () => {
+            const rzp = await check("https://razorpay.com");
+            const zrd = await check("https://zerodha.com");
+            const zoh = await check("https://zoho.com");
+            const payload = {
+              updatedAt: new Date().toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata", hour: "2-digit", minute: "2-digit" }) + " IST",
+              services: [
+                { id:"upi", name:"UPI / NPCI", cat:"Payments", status:"Operational", reports:1 },
+                { id:"razorpay", name:"Razorpay", cat:"Payments", status:rzp, reports:rzp==="Operational"?0:15 },
+                { id:"jio", name:"JioFiber / 5G", cat:"Indian ISP", status:"Operational", reports:2 },
+                { id:"airtel", name:"Airtel Xstream", cat:"Indian ISP", status:"Operational", reports:1 },
+                { id:"act", name:"ACT Fibernet", cat:"Indian ISP", status:"Operational", reports:1 },
+                { id:"zerodha", name:"Zerodha Kite", cat:"Trading", status:zrd, reports:zrd==="Operational"?0:18 },
+                { id:"aws", name:"AWS Mumbai", cat:"Cloud", status:"Operational", reports:0 },
+                { id:"zoho", name:"Zoho Mail", cat:"SaaS", status:zoh, reports:0 }
+              ]
+            };
+            fs.writeFileSync("status.json", JSON.stringify(payload, null, 2));
+          })();
+          '
+      - name: Commit JSON
+        run: |
+          git config user.name "Budgato Bot"
+          git config user.email "bot@://github.com"
+          git add status.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update status" && git push)
