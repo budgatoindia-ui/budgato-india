@@ -1,112 +1,163 @@
 name: Budgato India Auto Monitor
+
 on:
   schedule:
     - cron: '*/15 * * * *'
   workflow_dispatch:
+
 permissions:
   contents: write
+
+# Avoid overlapping scheduled/manual runs trying to write status.json simultaneously.
+concurrency:
+  group: budgato-india-auto-monitor
+  cancel-in-progress: false
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Update Status
-        run: |
-          node -e '
-          const fs = require("fs");
-          async function check(u) {
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update status.json
+        run: node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+
+          // All remote requests go through this guarded fetch. A timeout, DNS error,
+          // TLS failure, or other request exception is isolated to that service.
+          async function safeFetch(url, options = {}) {
             try {
-              const r = await fetch(u);
-              const d = await r.json();
-              return (d.status && d.status.indicator && d.status.indicator !== "none") ? "Disruption" : "Operational";
-            } catch { return "Operational"; }
+              return await fetch(url, {
+                ...options,
+                signal: AbortSignal.timeout(5000),
+              });
+            } catch (error) {
+              console.warn(`Request failed for ${url}: ${error.message}`);
+              return null;
+            }
           }
-          (async () => {
-            const services = [
-              { id: "whatsapp", name: "WhatsApp", category: "Social & IM", status: "Operational", reports: 1 },
-              { id: "instagram", name: "Instagram", category: "Social & IM", status: "Operational", reports: 2 },
-              { id: "telegram", name: "Telegram", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "viber", name: "Viber", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "signal", name: "Signal", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "discord", name: "Discord", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "facebook", name: "Facebook", category: "Social & IM", status: "Operational", reports: 2 },
-              { id: "x-twitter", name: "X (Twitter)", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "snapchat", name: "Snapchat", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "linkedin", name: "LinkedIn", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "reddit", name: "Reddit", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "youtube", name: "YouTube", category: "Social & IM", status: "Operational", reports: 1 },
-              { id: "spotify", name: "Spotify", category: "Social & IM", status: "Operational", reports: 0 },
-              { id: "netflix", name: "Netflix", category: "Social & IM", status: "Operational", reports: 1 },
-              { id: "amazon-india", name: "Amazon India", category: "Shopping & Delivery", status: "Operational", reports: 1 },
-              { id: "flipkart", name: "Flipkart", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "myntra", name: "Myntra", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "ajio", name: "Ajio", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "meesho", name: "Meesho", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "nykaa", name: "Nykaa", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "swiggy", name: "Swiggy", category: "Shopping & Delivery", status: "Operational", reports: 1 },
-              { id: "zomato", name: "Zomato", category: "Shopping & Delivery", status: "Operational", reports: 1 },
-              { id: "blinkit", name: "Blinkit", category: "Shopping & Delivery", status: "Operational", reports: 1 },
-              { id: "zepto", name: "Zepto", category: "Shopping & Delivery", status: "Operational", reports: 1 },
-              { id: "bigbasket", name: "BigBasket", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "bookmyshow", name: "BookMyShow", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "uber", name: "Uber", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "ola", name: "Ola", category: "Shopping & Delivery", status: "Operational", reports: 0 },
-              { id: "uidai", name: "UIDAI (Aadhaar Portal)", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "income-tax", name: "Income Tax e-Filing", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "digilocker", name: "DigiLocker", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "irctc", name: "IRCTC Rail Connect", category: "Govt & Citizen", status: "Operational", reports: 1 },
-              { id: "passport-seva", name: "Passport Seva", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "umang", name: "UMANG", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "epfo", name: "EPFO Portal", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "gst", name: "GST Portal", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "parivahan", name: "Parivahan Sewa", category: "Govt & Citizen", status: "Operational", reports: 0 },
-              { id: "upi", name: "UPI / NPCI", category: "Payments & Banks", status: "Operational", reports: 2 },
-              { id: "phonepe", name: "PhonePe", category: "Payments & Banks", status: "Operational", reports: 1 },
-              { id: "google-pay", name: "Google Pay (GPay)", category: "Payments & Banks", status: "Operational", reports: 1 },
-              { id: "paytm", name: "Paytm", category: "Payments & Banks", status: "Operational", reports: 2 },
-              { id: "razorpay", name: "Razorpay", category: "Payments & Banks", status: "Operational", reports: 1 },
-              { id: "cashfree", name: "Cashfree", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "paypal", name: "PayPal", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "stripe", name: "Stripe", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "hdfc-netbanking", name: "HDFC NetBanking", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "sbi-yono", name: "SBI YONO", category: "Payments & Banks", status: "Operational", reports: 1 },
-              { id: "icici-imobile", name: "ICICI iMobile", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "axis-bank", name: "Axis Bank", category: "Payments & Banks", status: "Operational", reports: 0 },
-              { id: "jio", name: "JioFiber / Jio 5G", category: "Indian ISPs", status: "Operational", reports: 3 },
-              { id: "airtel", name: "Airtel Xstream / 5G", category: "Indian ISPs", status: "Operational", reports: 2 },
-              { id: "act", name: "ACT Fibernet", category: "Indian ISPs", status: "Operational", reports: 1 },
-              { id: "bsnl", name: "BSNL Broadband", category: "Indian ISPs", status: "Operational", reports: 1 },
-              { id: "vi", name: "Vi (Vodafone Idea)", category: "Indian ISPs", status: "Operational", reports: 1 },
-              { id: "tata-play-fiber", name: "Tata Play Fiber", category: "Indian ISPs", status: "Operational", reports: 0 },
-              { id: "microsoft-365", name: "Microsoft 365 (O365 / Teams)", category: "Enterprise SaaS", status: "Operational", reports: 1 },
-              { id: "google-workspace", name: "Google Workspace", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "salesforce", name: "Salesforce", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "slack", name: "Slack", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "zoom", name: "Zoom", category: "Enterprise SaaS", status: "Operational", reports: 1 },
-              { id: "zoho-mail-crm", name: "Zoho Mail & CRM", category: "Enterprise SaaS", status: "Operational", reports: 1 },
-              { id: "freshworks", name: "Freshworks", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "atlassian-jira", name: "Atlassian Jira", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "shopify", name: "Shopify", category: "Enterprise SaaS", status: "Operational", reports: 0 },
-              { id: "aws-mumbai", name: "AWS Mumbai (ap-south-1)", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
-              { id: "cloudflare", name: "Cloudflare", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
-              { id: "github", name: "GitHub", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
-              { id: "digitalocean", name: "DigitalOcean", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
-              { id: "openai", name: "OpenAI / ChatGPT", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
-              { id: "anthropic-claude", name: "Anthropic Claude", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
-              { id: "google-gemini", name: "Google Gemini", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 },
-              { id: "steam", name: "Steam", category: "Cloud, AI & Gaming", status: "Operational", reports: 1 },
-              { id: "valorant-riot", name: "Valorant / Riot Games", category: "Cloud, AI & Gaming", status: "Operational", reports: 0 }
-            ];
-            const payload = {
-              updatedAt: new Date().toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' }) + ' IST',
-              services
+
+          async function getStatuspageStatus(url) {
+            try {
+              const response = await safeFetch(url, {
+                headers: { accept: 'application/json' },
+              });
+              if (!response || !response.ok) return 'Unknown';
+              let data;
+              try {
+                data = await response.json();
+              } catch (error) {
+                console.warn(`Invalid JSON from ${url}: ${error.message}`);
+                return 'Unknown';
+              }
+              const indicator = data?.status?.indicator;
+              if (indicator === 'none') return 'Operational';
+              if (['minor', 'major', 'critical'].includes(indicator)) return 'Disruption';
+              return 'Unknown';
+            } catch (error) {
+              console.warn(`Could not check status API ${url}: ${error.message}`);
+              return 'Unknown';
+            }
+          }
+
+          async function headStatus(url) {
+            try {
+              const response = await safeFetch(url, { method: 'HEAD' });
+              if (!response) return 'Unknown';
+              return response.ok || (response.status >= 300 && response.status < 400)
+                ? 'Operational'
+                : 'Unknown';
+            } catch (error) {
+              console.warn(`Could not check ${url}: ${error.message}`);
+              return 'Unknown';
+            }
+          }
+
+          function istTimestamp() {
+            return new Intl.DateTimeFormat('en-IN', {
+              timeZone: 'Asia/Kolkata',
+              year: 'numeric', month: '2-digit', day: '2-digit',
+              hour: '2-digit', minute: '2-digit', second: '2-digit',
+              hour12: true,
+            }).format(new Date()) + ' IST';
+          }
+
+          async function main() {
+            const html = fs.readFileSync('index.html', 'utf8');
+            // Read the canonical service IDs/names/categories from the dashboard so
+            // the feed cannot drift from index.html when services are updated.
+            const definitions = [...html.matchAll(/\{id:'([^']+)',name:'([^']+)',cat:'([^']+)'\}/g)]
+              .map((match) => ({ id: match[1], name: match[2], cat: match[3] }));
+            if (definitions.length !== 72 || new Set(definitions.map((item) => item.id)).size !== 72) {
+              throw new Error(`Expected 72 unique service definitions in index.html; found ${definitions.length}`);
+            }
+
+            let previousReports = {};
+            try {
+              const previous = JSON.parse(fs.readFileSync('status.json', 'utf8'));
+              if (Array.isArray(previous.services)) {
+                previousReports = Object.fromEntries(previous.services.map((item) => [item.id, item.reports]));
+              }
+            } catch (error) {
+              console.warn(`Existing status.json unavailable; starting report counts at zero: ${error.message}`);
+            }
+
+            const statusApis = {
+              razorpay: 'https://status.razorpay.com/api/v2/status.json',
+              cashfree: 'https://status.cashfree.com/api/v2/status.json',
+              zerodha: 'https://status.zerodha.com/api/v2/status.json',
+              github: 'https://githubstatus.com/api/v2/status.json',
+              cloudflare: 'https://cloudflarestatus.com/api/v2/status.json',
+              openai: 'https://status.openai.com/api/v2/status.json',
+              'atlassian-jira': 'https://status.atlassian.com/api/v2/status.json',
+              shopify: 'https://shopifystatus.com/api/v2/status.json',
             };
-            fs.writeFileSync('status.json', JSON.stringify(payload, null, 2));
-          })();
-          '
-      - name: Commit status update
+            const headChecks = {
+              irctc: 'https://irctc.co.in',
+              uidai: 'https://uidai.gov.in',
+              digilocker: 'https://digilocker.gov.in',
+            };
+
+            const results = await Promise.all(definitions.map(async (service) => {
+              let status = 'Operational';
+              if (statusApis[service.id]) {
+                status = await getStatuspageStatus(statusApis[service.id]);
+              } else if (headChecks[service.id]) {
+                status = await headStatus(headChecks[service.id]);
+              }
+              return {
+                ...service,
+                status,
+                reports: Number.isInteger(previousReports[service.id]) ? previousReports[service.id] : 0,
+              };
+            }));
+
+            fs.writeFileSync('status.json', JSON.stringify({ updatedAt: istTimestamp(), services: results }, null, 2) + '\n');
+            console.log(`Wrote ${results.length} service statuses.`);
+          }
+
+          main().catch((error) => {
+            console.error(`Status update failed safely: ${error.stack || error}`);
+            // Do not turn an isolated monitor problem into an exit-code-1 workflow.
+            process.exitCode = 0;
+          });
+          NODE
+
+      - name: Commit and push status only when it changed
         run: |
+          set -euo pipefail
           git config user.name "Budgato Bot"
           git config user.email "bot@://github.com"
           git add status.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update live service status" && git push)
+          if git diff --cached --quiet; then
+            echo "status.json is unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit -m "Update live service status"
+          # Bring in commits that landed after checkout before pushing our update.
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
