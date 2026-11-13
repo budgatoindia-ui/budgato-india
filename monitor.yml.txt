@@ -85,10 +85,11 @@ jobs:
 
           async function main() {
             const html = fs.readFileSync('index.html', 'utf8');
-            const definitions = [...html.matchAll(/\{id:'([^']+)',name:'([^']+)',cat:'([^']+)'\}/g)]
-              .map((match) => ({ id: match[1], name: match[2], cat: match[3] }));
-            if (definitions.length === 0) {
-              throw new Error('No service definitions found in index.html');
+            const servicePattern = /\{\s*(?:id|"id"|'id')\s*:\s*(['"])([^'"]+)\1\s*,\s*(?:name|"name"|'name')\s*:\s*(['"])([^'"]+)\3\s*,\s*(?:cat|"cat"|'cat')\s*:\s*(['"])([^'"]+)\5\s*\}/g;
+            const definitions = [...html.matchAll(servicePattern)]
+              .map((match) => ({ id: match[2], name: match[4], cat: match[6] }));
+            if (definitions.length !== 72) {
+              throw new Error(`Expected 72 service definitions in index.html, found ${definitions.length}`);
             }
 
             let previousReports = {};
@@ -137,7 +138,7 @@ jobs:
 
           main().catch((error) => {
             console.error(`Status update failed safely: ${error.stack || error}`);
-            process.exitCode = 0;
+            process.exitCode = 1;
           });
           NODE
 
@@ -145,7 +146,7 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name "Budgato Bot"
-          git config user.email "bot@users.noreply.github.com"
+          git config user.email "bot@github.com"
           git add status.json
           if git diff --cached --quiet; then
             echo "status.json is unchanged; nothing to commit."
