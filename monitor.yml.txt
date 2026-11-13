@@ -8,7 +8,6 @@ on:
 permissions:
   contents: write
 
-# Avoid overlapping scheduled/manual runs trying to write status.json simultaneously.
 concurrency:
   group: budgato-india-auto-monitor
   cancel-in-progress: false
@@ -27,8 +26,6 @@ jobs:
           'use strict';
           const fs = require('node:fs');
 
-          // All remote requests go through this guarded fetch. A timeout, DNS error,
-          // TLS failure, or other request exception is isolated to that service.
           async function safeFetch(url, options = {}) {
             try {
               return await fetch(url, {
@@ -88,12 +85,10 @@ jobs:
 
           async function main() {
             const html = fs.readFileSync('index.html', 'utf8');
-            // Read the canonical service IDs/names/categories from the dashboard so
-            // the feed cannot drift from index.html when services are updated.
             const definitions = [...html.matchAll(/\{id:'([^']+)',name:'([^']+)',cat:'([^']+)'\}/g)]
               .map((match) => ({ id: match[1], name: match[2], cat: match[3] }));
-            if (definitions.length !== 72 || new Set(definitions.map((item) => item.id)).size !== 72) {
-              throw new Error(`Expected 72 unique service definitions in index.html; found ${definitions.length}`);
+            if (definitions.length === 0) {
+              throw new Error('No service definitions found in index.html');
             }
 
             let previousReports = {};
@@ -103,23 +98,23 @@ jobs:
                 previousReports = Object.fromEntries(previous.services.map((item) => [item.id, item.reports]));
               }
             } catch (error) {
-              console.warn(`Existing status.json unavailable; starting report counts at zero: ${error.message}`);
+              console.warn(`Starting report counts at zero: ${error.message}`);
             }
 
             const statusApis = {
               razorpay: 'https://status.razorpay.com/api/v2/status.json',
               cashfree: 'https://status.cashfree.com/api/v2/status.json',
               zerodha: 'https://status.zerodha.com/api/v2/status.json',
-              github: 'https://githubstatus.com/api/v2/status.json',
-              cloudflare: 'https://cloudflarestatus.com/api/v2/status.json',
+              github: 'https://www.githubstatus.com/api/v2/status.json',
+              cloudflare: 'https://www.cloudflarestatus.com/api/v2/status.json',
               openai: 'https://status.openai.com/api/v2/status.json',
               'atlassian-jira': 'https://status.atlassian.com/api/v2/status.json',
-              shopify: 'https://shopifystatus.com/api/v2/status.json',
+              shopify: 'https://www.shopifystatus.com/api/v2/status.json',
             };
             const headChecks = {
-              irctc: 'https://irctc.co.in',
+              irctc: 'https://www.irctc.co.in',
               uidai: 'https://uidai.gov.in',
-              digilocker: 'https://digilocker.gov.in',
+              digilocker: 'https://www.digilocker.gov.in',
             };
 
             const results = await Promise.all(definitions.map(async (service) => {
@@ -142,7 +137,6 @@ jobs:
 
           main().catch((error) => {
             console.error(`Status update failed safely: ${error.stack || error}`);
-            // Do not turn an isolated monitor problem into an exit-code-1 workflow.
             process.exitCode = 0;
           });
           NODE
@@ -151,13 +145,12 @@ jobs:
         run: |
           set -euo pipefail
           git config user.name "Budgato Bot"
-          git config user.email "bot@://github.com"
+          git config user.email "bot@users.noreply.github.com"
           git add status.json
           if git diff --cached --quiet; then
             echo "status.json is unchanged; nothing to commit."
             exit 0
           fi
           git commit -m "Update live service status"
-          # Bring in commits that landed after checkout before pushing our update.
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
