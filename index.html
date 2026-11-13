@@ -8,13 +8,17 @@
   <title>Budgato India — Outage Radar</title>
   <style>
     :root{color-scheme:dark;--bg:#0b0f19;--card:#131a2a;--card2:#0f1726;--border:#1f2a3d;--text:#f3f4f6;--muted:#9aa7b8;--green:#22c783;--amber:#f5b942;--red:#ef5f6c;--blue:#6aa5ff}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{text-decoration:none;color:inherit}button{font:inherit}header{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid var(--border)}.container{width:min(980px,calc(100% - 32px));margin:0 auto}.brand{font-size:1.2rem;font-weight:850;letter-spacing:-.03em}.brand span{color:var(--green)}.timestamp{color:var(--muted);font-size:.84rem}.hero{padding:30px 0 8px}.eyebrow{color:var(--green);font-weight:800;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;letter-spacing:-.05em;margin:10px 0 10px}.hero p{margin:0;max-width:760px;color:var(--muted);font-size:1.03rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:22px 0}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}.card .tag{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 10px;background:rgba(34,199,131,.12);color:var(--green);font-size:.76rem;font-weight:800;letter-spacing:.03em}.card h2{margin:0;font-size:1.08rem;line-height:1.3}.card p{margin:0;color:var(--muted);font-size:.92rem}.link-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto}.link-row a{color:var(--blue);font-weight:700}.link-row .status{padding:5px 9px;border-radius:999px;font-size:.74rem;font-weight:800;border:1px solid var(--border)}.status.operational{background:#143427;color:var(--green)}.status.warning{background:#382b12;color:var(--amber)}.status.down{background:#3a1c25;color:var(--red)}.section-head{margin:24px 0 10px;color:var(--text);font-size:1.1rem;font-weight:800}.footer-note{padding:18px 0 40px;color:var(--muted);font-size:.85rem}@media(max-width:560px){header{padding:18px 0}header,.brand{align-items:flex-start;justify-content:center;flex-direction:column} .grid{grid-template-columns:1fr}} </style>
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}a{text-decoration:none;color:inherit}button{font:inherit}.container{width:min(980px,calc(100% - 32px));margin:0 auto}header{min-height:72px;display:flex;align-items:center;justify-content:space-between;gap:18px;border-bottom:1px solid var(--border)}.brand{font-size:1.2rem;font-weight:850;letter-spacing:-.03em}.brand span{color:var(--green)}.header-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}.timestamp{color:var(--muted);font-size:.84rem}.share-button,.cta{display:inline-flex;align-items:center;justify-content:center;border:1px solid #207b51;border-radius:9px;padding:9px 13px;background:#14633f;color:#fff;font-weight:750;text-decoration:none}.share-button:hover,.cta:hover{filter:brightness(1.12)}.hero{padding:30px 0 8px}.eyebrow{color:var(--green);font-weight:800;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase}.hero h1{font-size:clamp(2rem,5vw,3rem);line-height:1.1;letter-spacing:-.05em;margin:10px 0}.hero p{margin:0;max-width:760px;color:var(--muted);font-size:1.03rem}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:22px 0}.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}.card .tag{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 10px;background:rgba(34,199,131,.12);color:var(--green);font-size:.76rem;font-weight:800;letter-spacing:.03em}.card h2{margin:0;font-size:1.08rem;line-height:1.3}.card p{margin:0;color:var(--muted);font-size:.92rem}.link-row{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:auto}.link-row a{color:var(--blue);font-weight:700}.link-row .status{padding:5px 9px;border-radius:999px;font-size:.74rem;font-weight:800;border:1px solid var(--border)}.status.operational{background:#143427;color:var(--green)}.status.warning{background:#382b12;color:var(--amber)}.status.down{background:#3a1c25;color:var(--red)}.section-head{margin:24px 0 10px;color:var(--text);font-size:1.1rem;font-weight:800}.subscription{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;margin:25px 0;padding:20px;border:1px solid #36507d;border-radius:12px;background:linear-gradient(120deg,#14233b,#111b2d)}.subscription h2{margin:0 0 5px;font-size:1.2rem}.subscription p{margin:0;color:var(--muted)}.footer-note{padding:18px 0 34px;border-top:1px solid var(--border);color:var(--muted);font-size:.85rem}.seo-footer{display:flex;gap:8px 18px;flex-wrap:wrap;margin-top:10px}.seo-footer a{color:var(--blue)}.seo-footer a:hover{text-decoration:underline}@media(max-width:600px){.container{width:calc(100% - 22px)}header{align-items:flex-start;justify-content:center;flex-direction:column;padding:14px 0}.header-actions{justify-content:flex-start}.share-button{width:100%}.subscription{align-items:flex-start}}
+  </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div class="brand">Budgato <span>India</span></div>
-      <div class="timestamp">Live status pages for India</div>
+      <div class="header-actions">
+        <div id="last-updated" class="timestamp" aria-live="polite">Loading status.json IST timestamp… (Auto-syncs every 15 mins)</div>
+        <a id="share-radar" class="share-button" href="https://wa.me/" target="_blank" rel="noopener noreferrer">Share Live Radar on WhatsApp</a>
+      </div>
     </header>
 
     <main>
@@ -32,28 +36,24 @@
           <p>Check whether JioFiber or Jio 5G is down in India right now and review recent outage reports.</p>
           <div class="link-row"><a href="jio-fiber-down.html">Open page →</a><span class="status warning">Live</span></div>
         </article>
-
         <article class="card">
           <span class="tag">Payments</span>
           <h2>UPI / NPCI Server Status</h2>
           <p>See live UPI payment outage reports and troubleshoot pending or failed transactions.</p>
           <div class="link-row"><a href="upi-down-today.html">Open page →</a><span class="status operational">Live</span></div>
         </article>
-
         <article class="card">
           <span class="tag">Trading</span>
           <h2>Zerodha Kite Status</h2>
           <p>Check if Zerodha Kite is down today and review live server or order issues in India.</p>
           <div class="link-row"><a href="zerodha-server-status.html">Open page →</a><span class="status operational">Live</span></div>
         </article>
-
         <article class="card">
           <span class="tag">Messaging</span>
           <h2>WhatsApp India Outage</h2>
           <p>Quickly check whether WhatsApp is down in India and see current status and community reports.</p>
           <div class="link-row"><a href="whatsapp-down-india.html">Open page →</a><span class="status operational">Live</span></div>
         </article>
-
         <article class="card">
           <span class="tag">Rail bookings</span>
           <h2>IRCTC / Tatkal Status</h2>
@@ -67,9 +67,45 @@
         <h2>73 services monitored</h2>
         <p>Budgato India tracks outages and website health across internet, payments, apps, government portals, shopping, cloud services, and more. Use the live status feed and browser tools to check the latest health.</p>
       </div>
+
+      <section class="subscription" aria-label="Outage alerts subscription">
+        <div>
+          <h2>Instant WhatsApp &amp; Email Outage Alerts — ₹199/mo</h2>
+          <p>Get timely outage alerts for essential services across India.</p>
+        </div>
+        <a class="cta" href="https://rzp.io" target="_blank" rel="noopener noreferrer">Subscribe now</a>
+      </section>
     </main>
 
-    <div class="footer-note">Budgato India · Service status and browser checks are informational and may not reflect official provider status.</div>
+    <footer class="footer-note">
+      <div>Budgato India · Service status and browser checks are informational and may not reflect official provider status.</div>
+      <nav class="seo-footer" aria-label="Popular live service status pages">
+        <a href="jio-fiber-down.html">JioFiber / Jio 5G status</a>
+        <a href="upi-down-today.html">UPI / NPCI status</a>
+        <a href="zerodha-server-status.html">Zerodha Kite status</a>
+        <a href="whatsapp-down-india.html">WhatsApp status in India</a>
+        <a href="irctc-server-status.html">IRCTC / Tatkal status</a>
+      </nav>
+    </footer>
   </div>
+  <script>
+    'use strict';
+    const updatedBadge=document.getElementById('last-updated');
+    const shareUrl=window.location.href;
+    document.getElementById('share-radar').href='https://wa.me/?text='+encodeURIComponent('Check Budgato India Live Outage Radar: '+shareUrl);
+    async function refreshStatusTimestamp(){
+      try{
+        const response=await fetch('./status.json?t='+Date.now(),{cache:'no-store'});
+        if(!response.ok)throw new Error('Status feed unavailable');
+        const feed=await response.json();
+        const timestamp=feed.updatedAt||new Intl.DateTimeFormat('en-IN',{timeZone:'Asia/Kolkata',dateStyle:'medium',timeStyle:'medium'}).format(new Date())+' IST';
+        updatedBadge.textContent='Last status.json update: '+timestamp+' · (Auto-syncs every 15 mins)';
+      }catch{
+        updatedBadge.textContent='Status timestamp unavailable · (Auto-syncs every 15 mins)';
+      }
+    }
+    refreshStatusTimestamp();
+    setInterval(refreshStatusTimestamp,15*60*1000);
+  </script>
 </body>
 </html>
