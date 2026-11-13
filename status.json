@@ -1,59 +1,514 @@
 {
-  "updatedAt": "09:27 pm IST",
+  "updatedAt": "13/11/2026, 11:18:42 pm IST",
   "services": [
+    {
+      "id": "whatsapp",
+      "name": "WhatsApp",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "instagram",
+      "name": "Instagram",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "telegram",
+      "name": "Telegram",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "viber",
+      "name": "Viber",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "signal",
+      "name": "Signal",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "discord",
+      "name": "Discord",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "facebook",
+      "name": "Facebook",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "x-twitter",
+      "name": "X (Twitter)",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "snapchat",
+      "name": "Snapchat",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "linkedin",
+      "name": "LinkedIn",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "netflix",
+      "name": "Netflix",
+      "cat": "Social & IM",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "amazon-india",
+      "name": "Amazon India",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "flipkart",
+      "name": "Flipkart",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "myntra",
+      "name": "Myntra",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "ajio",
+      "name": "Ajio",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "meesho",
+      "name": "Meesho",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "nykaa",
+      "name": "Nykaa",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "swiggy",
+      "name": "Swiggy",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "zomato",
+      "name": "Zomato",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "blinkit",
+      "name": "Blinkit",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "zepto",
+      "name": "Zepto",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "bigbasket",
+      "name": "BigBasket",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "bookmyshow",
+      "name": "BookMyShow",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "uber",
+      "name": "Uber",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "ola",
+      "name": "Ola",
+      "cat": "Shopping & Delivery",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "uidai",
+      "name": "UIDAI (Aadhaar Portal)",
+      "cat": "Govt & Citizen",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "incometax",
+      "name": "Income Tax e-Filing",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "digilocker",
+      "name": "DigiLocker",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "irctc",
+      "name": "IRCTC Rail Connect",
+      "cat": "Govt & Citizen",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "passport-seva",
+      "name": "Passport Seva",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "umang",
+      "name": "UMANG",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "epfo",
+      "name": "EPFO Portal",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "gst",
+      "name": "GST Portal",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "parivahan",
+      "name": "Parivahan Sewa",
+      "cat": "Govt & Citizen",
+      "status": "Operational",
+      "reports": 0
+    },
     {
       "id": "upi",
       "name": "UPI / NPCI",
-      "cat": "Payments",
+      "cat": "Payments & Banks",
       "status": "Operational",
       "reports": 1
     },
     {
+      "id": "phonepe",
+      "name": "PhonePe",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "gpay",
+      "name": "Google Pay (GPay)",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "paytm",
+      "name": "Paytm",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
       "id": "razorpay",
       "name": "Razorpay",
-      "cat": "Payments",
+      "cat": "Payments & Banks",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "cashfree",
+      "name": "Cashfree",
+      "cat": "Payments & Banks",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "stripe",
+      "name": "Stripe",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "hdfc",
+      "name": "HDFC NetBanking",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "sbi",
+      "name": "SBI YONO",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "icici",
+      "name": "ICICI iMobile",
+      "cat": "Payments & Banks",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "axis",
+      "name": "Axis Bank",
+      "cat": "Payments & Banks",
       "status": "Operational",
       "reports": 0
     },
     {
       "id": "jio",
-      "name": "JioFiber / 5G",
-      "cat": "Indian ISP",
+      "name": "JioFiber / Jio 5G",
+      "cat": "Indian ISPs",
       "status": "Operational",
       "reports": 2
     },
     {
       "id": "airtel",
-      "name": "Airtel Xstream",
-      "cat": "Indian ISP",
+      "name": "Airtel Xstream / 5G",
+      "cat": "Indian ISPs",
       "status": "Operational",
       "reports": 1
     },
     {
       "id": "act",
       "name": "ACT Fibernet",
-      "cat": "Indian ISP",
+      "cat": "Indian ISPs",
       "status": "Operational",
       "reports": 1
     },
     {
-      "id": "zerodha",
-      "name": "Zerodha Kite",
-      "cat": "Trading",
+      "id": "bsnl",
+      "name": "BSNL Broadband",
+      "cat": "Indian ISPs",
       "status": "Operational",
       "reports": 0
     },
     {
-      "id": "aws",
-      "name": "AWS Mumbai",
-      "cat": "Cloud",
+      "id": "vi",
+      "name": "Vi (Vodafone Idea)",
+      "cat": "Indian ISPs",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "tata-play-fiber",
+      "name": "Tata Play Fiber",
+      "cat": "Indian ISPs",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "microsoft365",
+      "name": "Microsoft 365 (O365 / Teams)",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "google-workspace",
+      "name": "Google Workspace",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "salesforce",
+      "name": "Salesforce",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "slack",
+      "name": "Slack",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "zoom",
+      "name": "Zoom",
+      "cat": "Enterprise SaaS",
       "status": "Operational",
       "reports": 0
     },
     {
       "id": "zoho",
-      "name": "Zoho Mail",
-      "cat": "SaaS",
+      "name": "Zoho Mail & CRM",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "freshworks",
+      "name": "Freshworks",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "jira",
+      "name": "Atlassian Jira",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "shopify",
+      "name": "Shopify",
+      "cat": "Enterprise SaaS",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "aws",
+      "name": "AWS Mumbai (ap-south-1)",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "digitalocean",
+      "name": "DigitalOcean",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "openai",
+      "name": "OpenAI / ChatGPT",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Unknown",
+      "reports": 0
+    },
+    {
+      "id": "anthropic",
+      "name": "Anthropic Claude",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "gemini",
+      "name": "Google Gemini",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "steam",
+      "name": "Steam",
+      "cat": "Cloud, AI & Gaming",
+      "status": "Operational",
+      "reports": 0
+    },
+    {
+      "id": "riot",
+      "name": "Valorant / Riot Games",
+      "cat": "Cloud, AI & Gaming",
       "status": "Operational",
       "reports": 0
     }
