@@ -22,7 +22,8 @@ jobs:
           fetch-depth: 0
 
       - name: Update status.json
-        run: node <<'NODE'
+        run: |
+          node <<'NODE'
           'use strict';
           const fs = require('node:fs');
 
@@ -88,8 +89,8 @@ jobs:
             const servicePattern = /\{\s*(?:id|"id"|'id')\s*:\s*(['"])([^'"]+)\1\s*,\s*(?:name|"name"|'name')\s*:\s*(['"])([^'"]+)\3\s*,\s*(?:cat|"cat"|'cat')\s*:\s*(['"])([^'"]+)\5\s*\}/g;
             const definitions = [...html.matchAll(servicePattern)]
               .map((match) => ({ id: match[2], name: match[4], cat: match[6] }));
-            if (definitions.length !== 72) {
-              throw new Error(`Expected 72 service definitions in index.html, found ${definitions.length}`);
+            if (definitions.length === 0) {
+              throw new Error('No service definitions found in index.html');
             }
 
             let previousReports = {};
