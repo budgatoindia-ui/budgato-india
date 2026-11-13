@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Budgato India</title>
+  <rect width="128" height="128" rx="26" fill="#0b0f19"/>
+  <circle cx="64" cy="64" r="47" fill="none" stroke="#10b981" stroke-width="3" opacity=".55"/>
+  <circle cx="64" cy="64" r="36" fill="none" stroke="#10b981" stroke-width="4" opacity=".85"/>
+  <path d="M64 17v12M111 64H99M64 111V99M17 64h12" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+  <path d="M37 39h31c15 0 23 7 23 19 0 8-4 14-11 17 10 2 15 9 15 19 0 14-10 22-26 22H37V39zm17 14v16h13c5 0 8-3 8-8s-3-8-8-8H54zm0 30v19h14c6 0 9-3 9-9s-3-10-9-10H54z" fill="#fff"/>
+  <path d="M78 40c8 3 13 9 13 18 0 8-4 14-11 17 7 2 12 6 14 12l-12-5c-2-4-6-6-11-6H54v-7h13c5 0 8-3 8-8s-3-8-8-8H54v-7h14c4 0 7 1 10 2z" fill="#10b981"/>
+  <circle cx="83" cy="44" r="4" fill="#10b981"/>
+</svg>
