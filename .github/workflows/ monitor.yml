@@ -1,0 +1,157 @@
+name: Budgato India Auto Monitor
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: budgato-india-auto-monitor
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update status.json
+        run: node <<'NODE'
+          'use strict';
+          const fs = require('node:fs');
+
+          async function safeFetch(url, options = {}) {
+            try {
+              return await fetch(url, {
+                ...options,
+                signal: AbortSignal.timeout(5000),
+              });
+            } catch (error) {
+              console.warn(`Request failed for ${url}: ${error.message}`);
+              return null;
+            }
+          }
+
+          async function getStatuspageStatus(url) {
+            try {
+              const response = await safeFetch(url, {
+                headers: { accept: 'application/json' },
+              });
+              if (!response || !response.ok) return 'Unknown';
+              let data;
+              try {
+                data = await response.json();
+              } catch (error) {
+                console.warn(`Invalid JSON from ${url}: ${error.message}`);
+                return 'Unknown';
+              }
+              const indicator = data?.status?.indicator;
+              if (indicator === 'none') return 'Operational';
+              if (['minor', 'major', 'critical'].includes(indicator)) return 'Disruption';
+              return 'Unknown';
+            } catch (error) {
+              console.warn(`Could not check status API ${url}: ${error.message}`);
+              return 'Unknown';
+            }
+          }
+
+          async function headStatus(url) {
+            try {
+              const response = await safeFetch(url, { method: 'HEAD' });
+              if (!response) return 'Unknown';
+              return response.ok || (response.status >= 300 && response.status < 400)
+                ? 'Operational'
+                : 'Unknown';
+            } catch (error) {
+              console.warn(`Could not check ${url}: ${error.message}`);
+              return 'Unknown';
+            }
+          }
+
+          function istTimestamp() {
+            return new Intl.DateTimeFormat('en-IN', {
+              timeZone: 'Asia/Kolkata',
+              year: 'numeric', month: '2-digit', day: '2-digit',
+              hour: '2-digit', minute: '2-digit', second: '2-digit',
+              hour12: true,
+            }).format(new Date()) + ' IST';
+          }
+
+          async function main() {
+            const html = fs.readFileSync('index.html', 'utf8');
+            const servicePattern = /\{\s*(?:id|"id"|'id')\s*:\s*(['"])([^'"]+)\1\s*,\s*(?:name|"name"|'name')\s*:\s*(['"])([^'"]+)\3\s*,\s*(?:cat|"cat"|'cat')\s*:\s*(['"])([^'"]+)\5\s*\}/g;
+            const definitions = [...html.matchAll(servicePattern)]
+              .map((match) => ({ id: match[2], name: match[4], cat: match[6] }));
+            if (definitions.length !== 72) {
+              throw new Error(`Expected 72 service definitions in index.html, found ${definitions.length}`);
+            }
+
+            let previousReports = {};
+            try {
+              const previous = JSON.parse(fs.readFileSync('status.json', 'utf8'));
+              if (Array.isArray(previous.services)) {
+                previousReports = Object.fromEntries(previous.services.map((item) => [item.id, item.reports]));
+              }
+            } catch (error) {
+              console.warn(`Starting report counts at zero: ${error.message}`);
+            }
+
+            const statusApis = {
+              razorpay: 'https://razorpay.com',
+              cashfree: 'https://cashfree.com',
+              zerodha: 'https://zerodha.com',
+              github: 'https://githubstatus.com',
+              cloudflare: 'https://cloudflarestatus.com',
+              openai: 'https://openai.com',
+              'atlassian-jira': 'https://atlassian.com',
+              shopify: 'https://shopifystatus.com',
+            };
+            const headChecks = {
+              irctc: 'https://irctc.co.in',
+              uidai: 'https://uidai.gov.in',
+              digilocker: 'https://digilocker.gov.in',
+            };
+
+            const results = await Promise.all(definitions.map(async (service) => {
+              let status = 'Operational';
+              if (statusApis[service.id]) {
+                status = await getStatuspageStatus(statusApis[service.id]);
+              } else if (headChecks[service.id]) {
+                status = await headStatus(headChecks[service.id]);
+              }
+              return {
+                ...service,
+                status,
+                reports: Number.isInteger(previousReports[service.id]) ? previousReports[service.id] : 0,
+              };
+            }));
+
+            fs.writeFileSync('status.json', JSON.stringify({ updatedAt: istTimestamp(), services: results }, null, 2) + '\n');
+            console.log(`Wrote ${results.length} service statuses.`);
+          }
+
+          main().catch((error) => {
+            console.error(`Status update failed safely: ${error.stack || error}`);
+            process.exitCode = 1;
+          });
+          NODE
+
+      - name: Commit and push status only when it changed
+        run: |
+          set -euo pipefail
+          git config user.name "Budgato Bot"
+          git config user.email "bot@github.com"
+          git add status.json
+          if git diff --cached --quiet; then
+            echo "status.json is unchanged; nothing to commit."
+            exit 0
+          fi
+          git commit -m "Update live service status"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
